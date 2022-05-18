@@ -36,7 +36,7 @@ pipeline {
                 script {
                     println("node.js service start")
                        sh("""
-                        nohup node app.js &
+                        ./was_start.sh
                         """)
 
                 }
@@ -44,7 +44,7 @@ pipeline {
         }
         /*************************************************************/
         /*********************** 3. "Infra Apply *************************/
-         stage("express service validation") {
+         stage("express service test") {
 
 
              steps {
@@ -63,9 +63,7 @@ pipeline {
              steps {
                  script {
                      println("was service build")
-                        // sh("""
-                        //  terraform apply  -auto-approve -no-color
-                        //  """)
+                        app = docker.build("jenkins-docker-pipeline/my-image")
 
                  }
              }
