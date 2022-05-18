@@ -23,6 +23,7 @@ pipeline {
                     println("node.js service init")
                        sh("""
                         npm install
+                        export ENDPOINT=terraform-20220510065958830200000001.cjonqlniwrjn.ap-northeast-2.rds.amazonaws.com
                         """)
 
                 }
@@ -50,7 +51,7 @@ pipeline {
                  script {
                      println("express service validation")
                         sh("""
-                         curl http://localhost:3000/
+                         curl http://localhost:3000/select
                          """)
 
                  }
