@@ -51,6 +51,7 @@ pipeline {
                  script {
                      println("express service validation")
                         sh("""
+                         echo $ENDPOINT
                          curl http://localhost:3000/select
                          """)
 
