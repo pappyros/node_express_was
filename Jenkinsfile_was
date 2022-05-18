@@ -78,7 +78,7 @@ pipeline {
 
              steps {
                  script {
-                     println(""was service deploy")
+                     println("was service deploy")
                         // sh("""
                         //  terraform apply  -auto-approve -no-color
                         //  """)
