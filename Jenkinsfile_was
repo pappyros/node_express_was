@@ -36,7 +36,7 @@ pipeline {
                 script {
                     println("node.js service start")
                        sh("""
-                        node app.js &
+                        nohub node app.js &
                         """)
 
                 }
@@ -51,7 +51,6 @@ pipeline {
                  script {
                      println("express service validation")
                         sh("""
-                         echo $ENDPOINT
                          curl http://localhost:3000/select
                          """)
 
