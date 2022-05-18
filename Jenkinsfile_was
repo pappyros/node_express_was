@@ -63,7 +63,7 @@ pipeline {
              steps {
                  script {
                      println("was service build")
-                        app = docker.build("jenkins-docker-pipeline/my-image")
+                        app = docker.build("151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node:latest")
 
                  }
              }
