@@ -17,43 +17,71 @@ pipeline {
         }
 
         /*********************** 1. "Infra init *************************/
-        stage("Infra init") {
+        stage("node.js service init") {
             steps {
                 script {
-                    println("terraform init")
-                     //   sh("""
-                     //    terraform init
-                     //    """)
+                    println("node.js service init")
+                       sh("""
+                        npm install
+                        """)
 
                 }
             }
         }
         /*************************************************************/
         /*********************** 2. "Infra Plan *************************/
-        stage("Infra Plan") {
+        stage("node.js service start") {
             steps {
                 script {
-                    println("terraform plan")
-                     //   sh("""
-                     //    terraform plan
-                     //    """)
+                    println("node.js service start")
+                       sh("""
+                        node app.js &
+                        """)
 
                 }
             }
         }
         /*************************************************************/
         /*********************** 3. "Infra Apply *************************/
-         stage("Infra Apply") {
+         stage("express service validation") {
+
+
+             steps {
+                 script {
+                     println("express service validation")
+                        sh("""
+                         curl http://localhost:3000/
+                         """)
+
+                 }
+             }
+         }
+        /*************************************************************/
+        stage("was service build") {
+
+             steps {
+                 script {
+                     println("was service build")
+                        // sh("""
+                        //  terraform apply  -auto-approve -no-color
+                        //  """)
+
+                 }
+             }
+         }
+        /*************************************************************/
+         /*************************************************************/
+        stage("was service deploy") {
              when {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
 
              steps {
                  script {
-                     println("terraform apply")
-                        sh("""
-                         terraform apply  -auto-approve -no-color
-                         """)
+                     println(""was service deploy")
+                        // sh("""
+                        //  terraform apply  -auto-approve -no-color
+                        //  """)
 
                  }
              }
