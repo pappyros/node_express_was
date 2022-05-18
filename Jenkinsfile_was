@@ -72,7 +72,7 @@ pipeline {
          /*************************************************************/
         stage("was service deploy") {
              when {
-                expression {env.GIT_BRANCH == 'origin/main'}
+                expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
             }
 
              steps {
