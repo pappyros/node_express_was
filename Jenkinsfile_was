@@ -36,7 +36,7 @@ pipeline {
                 script {
                     println("node.js service start")
                        sh("""
-                        nohub node app.js &
+                        nohup node app.js &
                         """)
 
                 }
