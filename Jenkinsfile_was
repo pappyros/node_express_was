@@ -37,6 +37,7 @@ pipeline {
                     println("node.js service start")
                        sh("""
                         ./was_start.sh
+                        sleep 5
                         """)
 
                 }
