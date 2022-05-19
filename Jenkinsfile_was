@@ -39,6 +39,7 @@ pipeline {
                 sh './was_start.sh'
                 sh 'netstat -ntlp '
                 sh 'sleep 10'
+                sh 'netstat -ntlp '
             }
         }
         /*************************************************************/
