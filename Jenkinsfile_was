@@ -1,6 +1,19 @@
 pipeline {
     agent any
 
+    environment {
+      //   AWS_ACCOUNT_ID="844482743949"
+      //   AWS_DEFAULT_REGION="ap-northeast-2"
+      //   IMAGE_REPO_NAME="velnova"
+      //   IMAGE_TAG="latest"
+      //   REPOSITORY_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+      //   PROJECT_NAME = 'velnova-server' //Jenkins Project Name
+        CLUSTER_NAME = 'lohan-ecs-cluster'
+        SERVICE_NAME = 'lohan-ecs-service'
+      //   BRANCH = 'master'
+      //   GIT_URL = 'https://github.com/alsdud154/server-velnova-me.git'
+    }
+
     stages {
         stage("Git Checkout") {
             steps {
@@ -63,14 +76,13 @@ pipeline {
              steps {
                  script {
                      println("was service build")
-                        app = docker.build("151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node:latest")
+                        // app = docker.build("151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node:latest")
 
                  }
              }
          }
         /*************************************************************/
-         /*************************************************************/
-        stage("was service deploy") {
+        stage("was image upload to ecr") {
              when {
                 expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
             }
@@ -78,9 +90,37 @@ pipeline {
              steps {
                  script {
                      println("was image deploy")
-                        docker.withRegistry('https://151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node','ecr:ap-northeast-2:AWS_adm_credential'){
-                        app.push("${env.BUILD_NUMBER}")
-                        app.push("latest")}
+                        // docker.withRegistry('https://151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node','ecr:ap-northeast-2:AWS_adm_credential'){
+                        // app.push("${env.BUILD_NUMBER}")
+                        // app.push("latest")}
+
+                 }
+             }
+         }
+         /*************************************************************/
+        stage("remove docker image") {
+             when {
+                expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
+            }
+
+             steps {
+                 script {
+                     println("was image deploy")
+                        //  sh "docker rmi -f ${IMAGE_REPO_NAME} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+                 }
+             }
+         }
+        /*************************************************************/
+
+        stage("ecs deploy") {
+             when {
+                expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
+            }
+
+             steps {
+                 script {
+                     println("was image deploy")
+                       sh "aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --force-new-deployment"
 
                  }
              }
