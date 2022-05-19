@@ -37,7 +37,7 @@ pipeline {
                      //    """)
                 }
                 sh './was_start.sh'
-                sh 'netstat -ntlp | grep 3000'
+                sh 'netstat -ntlp '
                 sh 'sleep 5'
             }
         }
