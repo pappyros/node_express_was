@@ -6,10 +6,6 @@ pipeline {
             steps {
                 script {
                     println("git checkout")
-                       sh("""
-                        cd /root/infra
-                        """)
-
                 }
                 // Source Checkout
                 checkout scm
@@ -23,10 +19,10 @@ pipeline {
                     println("node.js service init")
                        sh("""
                         npm install
-                        export ENDPOINT=terraform-20220510065958830200000001.cjonqlniwrjn.ap-northeast-2.rds.amazonaws.com
                         """)
 
                 }
+                sh 'export ENDPOINT=terraform-20220510065958830200000001.cjonqlniwrjn.ap-northeast-2.rds.amazonaws.com'
             }
         }
         /*************************************************************/
@@ -35,12 +31,13 @@ pipeline {
             steps {
                 script {
                     println("node.js service start")
-                       sh("""
-                        ./was_start.sh
-                        sleep 5
-                        """)
-
+                     //   sh("""
+                     //    ./was_start.sh
+                     //    sleep 5
+                     //    """)
                 }
+                sh './was_start.sh'
+                sh 'sleep 5'
             }
         }
         /*************************************************************/
