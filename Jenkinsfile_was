@@ -5,7 +5,7 @@ pipeline {
         stage("Git Checkout") {
             steps {
                 script {
-                    println("change directory")
+                    println("git checkout")
                        sh("""
                         cd /root/infra
                         """)
