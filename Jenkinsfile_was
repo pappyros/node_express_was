@@ -76,7 +76,7 @@ pipeline {
              steps {
                  script {
                      println("was service build")
-                        // app = docker.build("151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node:latest")
+                     app = docker.build("151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node:latest")
 
                  }
              }
@@ -90,26 +90,31 @@ pipeline {
              steps {
                  script {
                      println("was image deploy")
-                        // docker.withRegistry('https://151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node','ecr:ap-northeast-2:AWS_adm_credential'){
-                        // app.push("${env.BUILD_NUMBER}")
-                        // app.push("latest")}
+                     aws lambda invoke --function-name Lohan_get_rds_endpoint --payload '{ "value" : "RDS"}' response.json
+                     sleep 5
+                     sed -i 's/"//g' response.json
+                     export endpoint=`cat response.json`
+                     sed -i "s/endpoint/$endpoint/g" dockerfile
+                     docker.withRegistry('https://151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node','ecr:ap-northeast-2:AWS_adm_credential'){
+                     app.push("${env.BUILD_NUMBER}")
+                     app.push("latest")}
 
                  }
              }
          }
          /*************************************************************/
-        stage("remove docker image") {
-             when {
-                expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
-            }
+      //   stage("remove docker image") {
+      //        when {
+      //           expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
+      //       }
 
-             steps {
-                 script {
-                     println("was image deploy")
-                        //  sh "docker rmi -f ${IMAGE_REPO_NAME} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
-                 }
-             }
-         }
+      //        steps {
+      //            script {
+      //                println("was image deploy")
+      //                   //  sh "docker rmi -f ${IMAGE_REPO_NAME} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+      //            }
+      //        }
+      //    }
         /*************************************************************/
 
         stage("ecs deploy") {
