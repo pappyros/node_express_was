@@ -76,9 +76,9 @@ pipeline {
              steps {
                  script {
                      println("was service build")
-                      sh("""
-                         aws lambda invoke --function-name Lohan_get_rds_endpoint --payload '{ "value" : "RDS"}' response.json
-                          """)
+
+                     sh "aws lambda invoke --function-name Lohan_get_rds_endpoint --payload '{ "value" : "RDS"}' response.json"
+                     sh "sleep5"
                      app = docker.build("151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node:latest")
 
                  }
