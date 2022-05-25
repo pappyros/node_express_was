@@ -1,15 +1,24 @@
 pipeline {
     agent any
 
+    environment {
+      //   AWS_ACCOUNT_ID="844482743949"
+      //   AWS_DEFAULT_REGION="ap-northeast-2"
+      //   IMAGE_REPO_NAME="velnova"
+      //   IMAGE_TAG="latest"
+      //   REPOSITORY_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
+      //   PROJECT_NAME = 'velnova-server' //Jenkins Project Name
+        CLUSTER_NAME = 'lohan-ecs-cluster'
+        SERVICE_NAME = 'lohan-ecs-service'
+      //   BRANCH = 'master'
+      //   GIT_URL = 'https://github.com/alsdud154/server-velnova-me.git'
+    }
+
     stages {
         stage("Git Checkout") {
             steps {
                 script {
-                    println("change directory")
-                       sh("""
-                        cd /root/infra
-                        """)
-
+                    println("git checkout")
                 }
                 // Source Checkout
                 checkout scm
@@ -17,43 +26,108 @@ pipeline {
         }
 
         /*********************** 1. "Infra init *************************/
-        stage("Infra init") {
+        stage("node.js service init") {
             steps {
                 script {
-                    println("terraform init")
-                     //   sh("""
-                     //    terraform init
-                     //    """)
+                    println("node.js service init")
+                       sh("""
+                        npm install
+                        """)
 
                 }
+                sh 'export ENDPOINT=terraform-20220510065958830200000001.cjonqlniwrjn.ap-northeast-2.rds.amazonaws.com'
             }
         }
         /*************************************************************/
         /*********************** 2. "Infra Plan *************************/
-        stage("Infra Plan") {
+        stage("node.js service start") {
             steps {
                 script {
-                    println("terraform plan")
+                    println("node.js service start")
                      //   sh("""
-                     //    terraform plan
+                     //    ./was_start.sh
+                     //    sleep 5
                      //    """)
-
                 }
+                sh './was_start.sh'
+                sh 'netstat -ntlp '
+                sh 'sleep 10'
+                sh 'netstat -ntlp '
             }
         }
         /*************************************************************/
         /*********************** 3. "Infra Apply *************************/
-         stage("Infra Apply") {
+         stage("express service test") {
+
+
+             steps {
+                 script {
+                     println("express service validation")
+                        sh("""
+                         curl http://localhost:3000/
+                         """)
+
+                 }
+             }
+         }
+        /*************************************************************/
+        stage("was service build") {
+                        when {
+                expression {env.GIT_BRANCH == 'origin/main'}
+            }
+
+             steps {
+                 script {
+                     println("was service build")
+
+                     sh 'sh rds_endpoint.sh'
+                     app = docker.build("151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node:latest")
+
+                 }
+             }
+         }
+        /*************************************************************/
+        stage("was image upload to ecr") {
              when {
                 expression {env.GIT_BRANCH == 'origin/main'}
             }
 
              steps {
                  script {
-                     println("terraform apply")
-                        sh("""
-                         terraform apply  -auto-approve -no-color
-                         """)
+                     println("was image deploy")
+
+
+                     docker.withRegistry('https://151564769076.dkr.ecr.ap-northeast-2.amazonaws.com/lohan-private-node','ecr:ap-northeast-2:AWS_adm_credential'){
+                     app.push("${env.BUILD_NUMBER}")
+                     app.push("latest")}
+
+                 }
+             }
+         }
+         /*************************************************************/
+      //   stage("remove docker image") {
+      //        when {
+      //           expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
+      //       }
+
+      //        steps {
+      //            script {
+      //                println("was image deploy")
+      //                   //  sh "docker rmi -f ${IMAGE_REPO_NAME} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
+      //            }
+      //        }
+      //    }
+        /*************************************************************/
+
+        stage("ecs deploy") {
+             when {
+                expression {env.GIT_BRANCH == 'origin/main'}
+            }
+
+             steps {
+                 script {
+                     println("was image deploy")
+                       sh "aws ecs update-service --cluster ${CLUSTER_NAME} --service ${SERVICE_NAME} --force-new-deployment"
 
                  }
              }
@@ -64,4 +138,3 @@ pipeline {
     }
 
 }
-
