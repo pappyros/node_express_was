@@ -72,6 +72,9 @@ pipeline {
          }
         /*************************************************************/
         stage("was service build") {
+                        when {
+                expression {env.GIT_BRANCH == 'origin/main'}
+            }
 
              steps {
                  script {
@@ -86,7 +89,7 @@ pipeline {
         /*************************************************************/
         stage("was image upload to ecr") {
              when {
-                expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
+                expression {env.GIT_BRANCH == 'origin/main'}
             }
 
              steps {
@@ -118,7 +121,7 @@ pipeline {
 
         stage("ecs deploy") {
              when {
-                expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
+                expression {env.GIT_BRANCH == 'origin/main'}
             }
 
              steps {
