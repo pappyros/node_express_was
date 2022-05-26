@@ -2,16 +2,8 @@ pipeline {
     agent any
 
     environment {
-      //   AWS_ACCOUNT_ID="844482743949"
-      //   AWS_DEFAULT_REGION="ap-northeast-2"
-      //   IMAGE_REPO_NAME="velnova"
-      //   IMAGE_TAG="latest"
-      //   REPOSITORY_URI="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}:${IMAGE_TAG}"
-      //   PROJECT_NAME = 'velnova-server' //Jenkins Project Name
         CLUSTER_NAME = 'lohan-ecs-cluster'
         SERVICE_NAME = 'lohan-ecs-service'
-      //   BRANCH = 'master'
-      //   GIT_URL = 'https://github.com/alsdud154/server-velnova-me.git'
     }
 
     stages {
@@ -35,7 +27,7 @@ pipeline {
                         """)
 
                 }
-                sh 'export ENDPOINT=terraform-20220510065958830200000001.cjonqlniwrjn.ap-northeast-2.rds.amazonaws.com'
+               //  sh 'export ENDPOINT=terraform-20220510065958830200000001.cjonqlniwrjn.ap-northeast-2.rds.amazonaws.com'
             }
         }
         /*************************************************************/
@@ -104,21 +96,7 @@ pipeline {
                  }
              }
          }
-         /*************************************************************/
-      //   stage("remove docker image") {
-      //        when {
-      //           expression {env.GIT_BRANCH == 'origin/feature/lohan-was'}
-      //       }
-
-      //        steps {
-      //            script {
-      //                println("was image deploy")
-      //                   //  sh "docker rmi -f ${IMAGE_REPO_NAME} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${IMAGE_REPO_NAME}"
-      //            }
-      //        }
-      //    }
         /*************************************************************/
-
         stage("ecs deploy") {
              when {
                 expression {env.GIT_BRANCH == 'origin/main'}
