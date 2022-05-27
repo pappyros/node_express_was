@@ -25,7 +25,7 @@ app.post('/insert', function (req, res) {
     console.log(sql);
     conn.query(sql, params, function(err) {
         if(err) console.log('query is not excuted. insert fail...\n' + err);
-        else res.send("SUCCESS_INSERT");
+        else res.send("SUCCESS_INSERT_V.2");
     });
 });
 
